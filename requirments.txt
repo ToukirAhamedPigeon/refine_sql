@@ -1,0 +1,5 @@
+# Core dependencies
+# No extra packages required beyond standard library
+# If you add packages later, list them here, e.g.:
+# pandas==2.1.0
+# sqlalchemy==2.1.0

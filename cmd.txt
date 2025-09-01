@@ -1,0 +1,1 @@
+mysql -u root --database=building_database --verbose --show-warnings < "E:\python\refine_sql\chunks\building_database_temp_refined.sql"
