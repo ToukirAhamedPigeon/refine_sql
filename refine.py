@@ -7,23 +7,22 @@ from pathlib import Path
 from typing import Optional, Tuple, Dict, List, Callable
 
 # --- Utility: Logging with timestamps and durations ---
-def log_step_start(step_name: str, log_func: Optional[Callable[[str], None]] = None) -> datetime.datetime:
+def log_step_start(step_name: str, log_func: Optional[Callable[[str, Optional[int]], None]] = None, progress: int = 0) -> datetime.datetime:
     start_time = datetime.datetime.now()
     msg = f"[{start_time.strftime('%Y-%m-%d %H:%M:%S')}] 🚀 Starting: {step_name}"
     if log_func:
-        log_func(msg)
+        log_func(msg, progress)
     else:
         print(msg)
     return start_time
 
-def log_step_end(step_name: str, start_time: datetime.datetime, log_func: Optional[Callable[[str], None]] = None) -> None:
+def log_step_end(step_name: str, start_time: datetime.datetime, log_func: Optional[Callable[[str, Optional[int]], None]] = None, progress: int = 100) -> None:
     end_time = datetime.datetime.now()
     elapsed = end_time - start_time
     minutes, seconds = divmod(elapsed.total_seconds(), 60)
-    msg = (f"[{end_time.strftime('%Y-%m-%d %H:%M:%S')}] ✅ Finished: {step_name} "
-           f"(took {int(minutes)}m {int(seconds)}s)\n")
+    msg = f"[{end_time.strftime('%Y-%m-%d %H:%M:%S')}] ✅ Finished: {step_name} (took {int(minutes)}m {int(seconds)}s)"
     if log_func:
-        log_func(msg)
+        log_func(msg, progress)
     else:
         print(msg)
 
@@ -98,7 +97,7 @@ def refine_sql(input_file: str, log_func: Optional[Callable[[str], None]] = None
     output_dir.mkdir(parents=True, exist_ok=True)
     
     # --- Step 1: Extract CREATE TABLEs and metadata ---
-    step1_start = log_step_start("Step 1: Extract CREATE TABLEs and metadata", log_func)
+    step1_start = log_step_start("Step 1: Extract CREATE TABLEs and metadata", log_func, progress=5)
     column_metadata_map = {}
     inside_create = False
     create_block = []
@@ -152,10 +151,10 @@ def refine_sql(input_file: str, log_func: Optional[Callable[[str], None]] = None
     with open(json_index_file, 'w', encoding='utf-8') as fjson:
         json.dump(column_metadata_map, fjson, indent=2)
 
-    log_step_end("Step 1: Extract CREATE TABLEs and metadata", step1_start, log_func)
+    log_step_end("Step 1: Extract CREATE TABLEs and metadata", step1_start, log_func, progress=20)
 
     # --- Step 2: Extract INSERT statements ---
-    step2_start = log_step_start("Step 2: Extract INSERT statements", log_func)
+    step2_start = log_step_start("Step 2: Extract INSERT statements", log_func, progress=21)
     def write_insert_statements(src_path: str, dst_path: str, extra_path: str):
         with open(src_path, 'r', encoding='utf-8') as f:
             s = f.read()
@@ -205,10 +204,10 @@ def refine_sql(input_file: str, log_func: Optional[Callable[[str], None]] = None
                 i += 1
 
     write_insert_statements(input_file, insert_temp_file, extra_file)
-    log_step_end("Step 2: Extract INSERT statements", step2_start, log_func)
+    log_step_end("Step 2: Extract INSERT statements", step2_start, log_func, progress=40)
 
     # --- Step 3: Refine INSERT values ---
-    step3_start = log_step_start("Step 3: Refine INSERT values", log_func)
+    step3_start = log_step_start("Step 3: Refine INSERT values", log_func, progress=41)
     with open(json_index_file, 'r', encoding='utf-8') as f:
         table_metadata = json.load(f)
 
@@ -321,10 +320,10 @@ def refine_sql(input_file: str, log_func: Optional[Callable[[str], None]] = None
             full_row = ''.join(row_buffer)
             outfile.write(fix_row(full_row, current_columns))
 
-    log_step_end("Step 3: Refine INSERT values", step3_start, log_func)
+    log_step_end("Step 3: Refine INSERT values", step3_start, log_func, progress=70)
 
     # --- Step 4: Concatenate into final SQL ---
-    step4_start = log_step_start("Step 4: Concatenate into final SQL", log_func)
+    step4_start = log_step_start("Step 4: Concatenate into final SQL", log_func, progress=71)
     with open(final_output_file, 'w', encoding='utf-8') as fout:
         for fpath in [create_file, refined_file, extra_file]:
             if os.path.exists(fpath):
@@ -333,13 +332,13 @@ def refine_sql(input_file: str, log_func: Optional[Callable[[str], None]] = None
                     fout.write(fin.read())
                     fout.write(f"\n-- End of {os.path.basename(fpath)}\n\n")
     log_func and log_func(f"✅ Final concatenated SQL → {final_output_file}")
-    log_step_end("Step 4: Concatenate into final SQL", step4_start, log_func)
+    log_step_end("Step 4: Concatenate into final SQL", step4_start, log_func, progress=90)
 
     # --- Step 5: Cleanup ---
-    step5_start = log_step_start("Step 5: Cleanup", log_func)
+    step5_start = log_step_start("Step 5: Cleanup", log_func, progress=91)
     shutil.rmtree(output_dir, ignore_errors=True)
     log_func and log_func("🧹 Cleanup complete — only results folder kept.")
-    log_step_end("Step 5: Cleanup", step5_start, log_func)
+    log_step_end("Step 5: Cleanup", step5_start, log_func, progress=100)
 
     return final_output_file
 

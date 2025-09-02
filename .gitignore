@@ -14,10 +14,10 @@ refined_sqls/.venv/
 
 # Optional: if you want to ignore all files in those folders too
 # (not just the virtual environment), but still keep the folders:
-./refined_sqls
-./chunks
-./sqls
-./results
+./refined_sqls/*
+./chunks/*
+./sqls/*
+./results/*
 
 # But allow a README to keep the folder in Git
 !refine_sqls/.gitkeep
@@ -162,6 +162,9 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+dist/*
+build/*
+results/*
 
 # Spyder project settings
 .spyderproject
@@ -226,3 +229,4 @@ marimo/_lsp/
 __marimo__/
 results/building_database.sql
 sqls/building_database.sql
+results/building_database_Time(11_05_44)_Date(02-Sep-2025).sql
