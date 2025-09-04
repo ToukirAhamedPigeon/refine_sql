@@ -10,16 +10,30 @@ OutputBaseFilename=RefineSQLApp_Installer
 Compression=lzma
 SolidCompression=yes
 WizardStyle=modern
+ArchitecturesInstallIn64BitMode=x64
+PrivilegesRequired=admin
+PrivilegesRequiredOverridesAllowed=commandline dialog
+SetupIconFile=logo.ico
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
+[Tasks]
+Name: "desktopicon"; Description: "Create a &desktop icon"; GroupDescription: "Additional icons:"; Flags: unchecked
+
 [Files]
-; Copy the entire build folder
-Source: "dist\RefineSQLApp\*"; DestDir: "{app}"; Flags: recursesubdirs createallsubdirs ignoreversion
+; Main application executable
+Source: "dist\app.exe"; DestDir: "{app}"; Flags: ignoreversion
+
+; Logo icon for shortcuts
+Source: "logo.ico"; DestDir: "{app}"; Flags: ignoreversion
 
 [Icons]
-Name: "{group}\RefineSQLApp"; Filename: "{app}\RefineSQLApp.exe"
+; Start Menu shortcut
+Name: "{group}\RefineSQLApp"; Filename: "{app}\app.exe"; IconFilename: "{app}\logo.ico"
+
+; Optional Desktop shortcut
+Name: "{commondesktop}\RefineSQLApp"; Filename: "{app}\app.exe"; IconFilename: "{app}\logo.ico"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\RefineSQLApp.exe"; Description: "Launch RefineSQLApp"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\app.exe"; Description: "Launch RefineSQLApp"; Flags: nowait postinstall skipifsilent
