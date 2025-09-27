@@ -14,9 +14,14 @@ This Python project processes raw SQL files to:
 
 ├── venv/ # Python virtual environment
 ├── sqls/ # Input raw SQL files
+├── installer/ # Input raw SQL files
 ├── chunks/ # Temporary SQL chunks (auto-deleted)
 ├── results/ # Final refined SQL file
+├── app.py # GUI Python script
 ├── refine.py # Main Python script
+├── logo.ico 
+├── logo.png 
+├── RefineSQLAppInstaller.iss
 ├── .gitignore
 ├── requirements.txt
 └── README.md
@@ -44,6 +49,10 @@ pip install -r requirements.txt
 4. Run the script:
 
 python refine.py
+
+# Make .EXE File
+# pip install pyinstaller
+# pyinstaller --onefile --windowed --icon=logo.ico --name RefineSQLApp app.py
 
 
 5. The final refined SQL will be in:
