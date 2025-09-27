@@ -1,78 +1,79 @@
-# SQL Refinement Project
+# RefineSQLApp
 
-This Python project processes raw SQL files to:
+**Version:** 1.0.1
+**Status:** Open Source (Windows executable available)
 
-1. Extract `CREATE TABLE` statements and generate metadata.
-2. Extract and clean `INSERT` statements.
-3. Refine values (truncate `VARCHAR`, enforce `ENUM`, fill missing defaults).
-4. Concatenate all SQL chunks into a single final `.sql` file.
-5. Cleanup all temporary files, keeping only the final output.
+## Overview
 
----
+Large SQL dumps from legacy MySQL/MariaDB and even modern MySQL databases often contain errors that prevent smooth imports. These errors may include:
 
-## Project Structure
+* Foreign key dependency issues
+* Empty strings in numeric/date fields
+* Nullability conflicts
+* Oversized `VARCHAR` values
+* Inconsistent quoting (`'` vs `"`)
+* Newline and escape character issues
+* Triggers, views, and stored procedures breaking import order
 
-├── venv/ # Python virtual environment
-├── sqls/ # Input raw SQL files
-├── installer/ # Input raw SQL files
-├── chunks/ # Temporary SQL chunks (auto-deleted)
-├── results/ # Final refined SQL file
-├── app.py # GUI Python script
-├── refine.py # Main Python script
-├── logo.ico 
-├── logo.png 
-├── RefineSQLAppInstaller.iss
-├── .gitignore
-├── requirements.txt
-└── README.md
+**RefineSQLApp** automatically analyzes, restructures, and cleans these SQL files so they can be executed with minimal errors, protecting against huge data loss.
 
----
+## How It Works (Procedures)
 
-## Setup
+1. **Splitting Phase**
 
-1. Create virtual environment:
+   * Separates `CREATE TABLE`, `INSERT INTO`, and views/triggers into dedicated files.
 
-```bash
-python -m venv venv
-source venv/bin/activate   # Linux/macOS
-venv\Scripts\activate      # Windows
+2. **Dependency Resolution**
 
+   * Moves foreign-key-dependent tables down in execution order.
+   * Handles circular dependencies by shifting foreign key constraints into `ALTER TABLE` statements executed later.
 
-2. Install dependencies (if any):
+3. **Schema Analysis**
 
-pip install -r requirements.txt
+   * Extracts column metadata from `CREATE TABLE` statements into a JSON file.
+   * Identifies nullable columns, default values, and length constraints.
 
+4. **Data Refinement**
 
-3. Place your raw SQL file in sqls/ (e.g., building_database.sql).
+   * Reads `INSERT INTO` statements and checks values against schema rules.
+   * Fixes errors such as:
 
+     * Invalid numeric/date values replaced with `NULL` when allowed
+     * Oversized strings truncated to column max length
+     * Empty strings corrected for proper type matching
+     * Quote and newline inconsistencies normalized
 
-4. Run the script:
+5. **Rebuild & Output**
 
-python refine.py
+   * Produces a clean, import-ready SQL file inside the `results/` directory.
+   * Generates logs of refinements performed.
 
-# Make .EXE File
-# pip install pyinstaller
-# pyinstaller --onefile --windowed --icon=logo.ico --name RefineSQLApp app.py
+## Usage
 
+1. Download and run the provided `.exe` file (no setup required).
+2. Upload your raw/dumped SQL file into the app.
+3. The app will automatically start refining and show logs in real time.
+4. After completion, the refined SQL file will be saved in the `results/` folder located in the same directory as the `.exe`.
+5. You can manage older refined SQLs (delete/copy/move) directly within the app.
 
-5. The final refined SQL will be in:
+## Performance & Testing
 
-Temporary chunk files will be automatically deleted.
+* Tested on medium to very large SQL dumps (up to 1GB, ~3M lines).
+* Successfully reduced one file from **10,000+ errors** to just **3–4 errors**.
+* Works across both modern and legacy MySQL/MariaDB databases.
 
+## Roadmap
 
-Notes
+* Enhanced UI/UX
+* Cross-platform builds (Linux/macOS)
+* Expanded error-handling coverage
+* Community feedback-based improvements
 
-- Views or objects starting with v_ are commented out in the final SQL.
+## Downloads
 
-- The script automatically handles:
+* [GitHub Repository](#)
+* [Direct Executable Link](#)
 
-    - Truncating oversized VARCHARs.
+## License
 
-    - Filling defaults for missing values.
-
-    - Sanitizing control characters.
-
-    - Handling ENUM restrictions.
-
-
-- Only the final .sql file is kept after execution.
+Open source – free to use and improve. Contributions welcome.
