@@ -71,8 +71,8 @@ Large SQL dumps from legacy MySQL/MariaDB and even modern MySQL databases often 
 
 ## Downloads
 
-* [GitHub Repository](#)
-* [Direct Executable Link](#)
+* [GitHub Repository](https://github.com/ToukirAhamedPigeon/refine_sql)
+* [Direct Executable Link](https://drive.google.com/file/d/1k7dPl0cYS-8KiYQHJGFtHbsJCmERfhmJ/view?usp=sharing)
 
 ## License
 
