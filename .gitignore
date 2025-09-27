@@ -11,6 +11,7 @@ refine_sqls/.venv/
 chunks/.venv/
 sqls/.venv/
 refined_sqls/.venv/
+sqls/
 
 # Optional: if you want to ignore all files in those folders too
 # (not just the virtual environment), but still keep the folders:

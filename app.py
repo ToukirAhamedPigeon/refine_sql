@@ -183,7 +183,7 @@ class RefineApp(QWidget):
         # --- Footer ---
         footer = QLabel(
             'Developed By <a href="https://pigeonic.com" style="color:#00BFFF; text-decoration:none;">Pigeonic</a> | '
-            'Version 1.0.0 | © 2025 Pigeonic. All rights reserved.'
+            'Version 1.0.1 | © 2025 Pigeonic. All rights reserved.'
         )
         footer.setTextFormat(Qt.RichText)
         footer.setTextInteractionFlags(Qt.TextBrowserInteraction)
